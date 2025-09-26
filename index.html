@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Prediction</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Loan Default Prediction</h1>
+        <p>A Machine Learning Project</p>
+    </header>
+
+    <hr>
+   
+    <p>This Loan Default Prediction tool uses machine learning to assess the risk of default 
+        based on applicant details such as income, loan amount, and credit history.</p>
+
+    <form>
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+
+        <label for="married">Married:</label>
+        <select id="married" name="married">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+
+        <label for="dependents">Dependents:</label>
+        <select id="dependents" name="dependents">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3+">3+</option>
+        </select>
+
+        <label for="education">Education:</label>
+        <select id="education" name="education">
+            <option value="graduate">Graduate</option>
+            <option value="not_graduate">Not Graduate</option>
+        </select>
+
+        <label for="self_employed">Self Employed:</label>
+        <select id="self_employed" name="self_employed">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select>
+
+        <label for="applicant_income">Applicant Income</label>
+        <input type="number" id="applicant_income" name="applicant_income" placeholder="in thousands">
+
+        <label for="coapplicant_income">Coapplicant Income</label>
+        <input type="number" id="coapplicant_income" name="coapplicant_income" placeholder="in thousands">
+
+        <label for="loan_amt">Loan Amount</label>
+        <input type="number" id="loan_amt" name="loan_amt" placeholder="in thousands">
+        
+        <label for="loan_amt_term">Loan Amount Term</label>
+        <input type="number" id="loan_amt_term" name="loan_amt_term" placeholder="in months">
+
+        <label for="credit_history">Credit History:</label>
+        <select id="credit_history" name="credit_history">
+            <option value="1">Good</option>
+            <option value="0">Bad</option>
+        </select>
+
+        <label for="property_area">Property Area:</label>
+        <select id="property_area" name="property_area">
+            <option value="urban">Urban</option>
+            <option value="rural">Rural</option>
+        </select>
+
+        <input class="button" type="button" id="submit" onclick="msg()" value="Predict">
+    </form>
+
+    <script src="script.js"></script>
+
+</body>
