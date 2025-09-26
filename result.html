@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Loan Prediction Result</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 92%;
+    }
+    h2 { color: #333; margin-bottom: 10px; }
+    p { font-size: 16px; margin: 8px 0; }
+    .btn { display:inline-block; margin-top:14px; padding:10px 15px; background:#007BFF; color:#fff; border-radius:6px; text-decoration:none;}
+    .btn:hover{ background:#0056b3; }
+    .params { text-align:left; background:#fafafa; padding:12px; border-radius:6px; margin-top:10px; }
+    .params li { margin-bottom:6px; }
+    .score { font-weight:700; font-size:18px; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Loan Prediction Result</h2>
+
+    <p id="predictionText"></p>
+    <p id="probabilityText"></p>
+    <p id="note"></p>
+
+    <h3>Input used</h3>
+    <ul class="params" id="paramsList"></ul>
+
+    <a href="index.html" class="btn" id="tryAgain">Try Again</a>
+  </div>
+
+  <script>
+    // Read stored result and input
+    const storedResult = JSON.parse(localStorage.getItem("loanResult"));
+    const storedInput = JSON.parse(localStorage.getItem("loanInput"));
+
+    function extractProb(probObj) {
+      // Handles shapes: [[p0,p1]] OR [p0,p1] OR {class0:.., class1:..}
+      if (!probObj) return null;
+      if (Array.isArray(probObj)) {
+        if (Array.isArray(probObj[0])) {
+          // nested array e.g. [[0.14,0.86]]
+          return probObj[0][1];
+        } else if (probObj.length >= 2 && typeof probObj[1] === 'number') {
+          // flat array e.g. [0.14,0.86]
+          return probObj[1];
+        }
+      }
+      if (typeof probObj === 'object') {
+        // maybe {'0':0.14,'1':0.86} or {class0:..., class1:...}
+        if ('1' in probObj) return Number(probObj['1']);
+        if ('class1' in probObj) return Number(probObj['class1']);
+      }
+      return null;
+    }
+
+    if (!storedResult) {
+      document.querySelector('.container').innerHTML = '<p>No result found. Please go back and try again.</p><a href="index.html" class="btn">Go back</a>';
+    } else {
+      // normalize prediction -> boolean approved
+      const rawPred = storedResult.prediction;
+      const predNum = Number(rawPred);
+      let approved = false;
+      if (!Number.isNaN(predNum)) {
+        approved = predNum === 1;
+      } else {
+        // fallback: text-based
+        const s = String(rawPred).toLowerCase();
+        approved = s.includes('approve') || s.includes('yes') || s === 'y';
+      }
+
+      const prob = extractProb(storedResult.probability);
+      const probText = (prob !== null && !Number.isNaN(prob)) ? `${(prob * 100).toFixed(2)}%` : "N/A";
+
+      document.getElementById('predictionText').innerText = `Prediction: ${approved ? 'Approved ✅' : 'Rejected ❌'}`;
+      document.getElementById('probabilityText').innerText = `Confidence (class 1 - approved): ${probText}`;
+
+      // friendly note
+      if (approved) {
+        document.getElementById('note').innerText = "Based on the input, the model indicates a high chance of approval. Higher income and good credit history typically increase approval chances.";
+      } else {
+        document.getElementById('note').innerText = "The model indicates a lower chance of approval. Consider improving credit history, increasing income, or reducing requested loan amount.";
+      }
+
+      // show input values
+      const ul = document.getElementById('paramsList');
+      if (storedInput && typeof storedInput === 'object') {
+        for (const [k, v] of Object.entries(storedInput)) {
+          const li = document.createElement('li');
+          li.textContent = `${k}: ${v}`;
+          ul.appendChild(li);
+        }
+      } else {
+        ul.innerHTML = '<li>No input info available.</li>';
+      }
+    }
+
+    // when user clicks Try Again, we keep inputs so they can edit; if you prefer to clear use:
+    // document.getElementById('tryAgain').addEventListener('click', () => { localStorage.removeItem('loanResult'); localStorage.removeItem('loanInput'); });
+  </script>
+</body>
+</html>
